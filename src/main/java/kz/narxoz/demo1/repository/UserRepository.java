@@ -7,34 +7,28 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface UserRepository extends JpaRepository<User, Long> {
-    List<User> findByEmailEndsWith(String email);
 
+    User findByUsername(String username);
+
+    /** Jpa Methods */
+
+    // find top 2 users where name starts with `name`
     List<User> findTop2ByNameStartsWith(String name);
 
-    List<User> findBySurnameContaining(String Surname);
+    // find users by name and surname (?1, ?2)
+    List<User> findByNameAndSurname(String name, String surname);
 
-    @Query(value = "select * from users order by id asc ", nativeQuery = true)
-    List<User> getUsersSortedById();
+    // find users where email contains `email` sorted by surname (asc)
+    List<User> findFirstByEmailContainingOrderBySurname(String email);
 
-    @Query(value = "select  * from users where id>1 order by id desc limit 2 ", nativeQuery = true)
-    List<User> getTop2UsersLastInsertedFromDatabase();
+    /** Native Query */
 
-    @Query(value = "select * from users order by name desc ", nativeQuery = true)
-    List<User> getUsersSortedByNameDesc();
+    // find users where name starts with `A` order by surname (asc)
+    @Query(value = "select * from users where name like 'A%' order by surname", nativeQuery = true)
+    List<User> findAllSorted();
 
-    List<User> findByEmailNotContaining(String email);
+    // find users where id greater than `qid`
+    @Query(value = "select * from users where id > :qid", nativeQuery = true)
+    List<User> findByGreaterId(Long qid);
 
-    @Query(value = "select * from users where surname=name ", nativeQuery = true)
-    List<User> getUsersNameEqualSurname();
-
-    @Query(value = "select * from users where email like '%narxoz.kz%' or email like '%mail.ru%' or email like '%gmail.com%' "
-            , nativeQuery = true)
-    List<User> getUsersWhichEmailContains();
-
-    @Query(value = "select distinct on(name) * from users ", nativeQuery = true)
-    List<User> getUsersNameDistinct();
-
-    @Override
-    List<User> findAll();
 }
-
